@@ -7,9 +7,13 @@ load_dotenv()
 
 KAFKA_BOOTSTRAP_SERVERS = getenv("KAFKA_BOOTSTRAP_SERVERS")
 KAFKA_TOPIC = getenv("KAFKA_TOPIC")
+ENV = getenv("ENV")
 
 
 def publicar_evento_pedido_criado(pedido_id: str, cliente: str):
+
+    if ENV == "test":
+        return  # 🔥 pula no teste
 
     try:
         producer = KafkaProducer(

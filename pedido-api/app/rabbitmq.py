@@ -7,9 +7,14 @@ load_dotenv()
 
 RABBITMQ_HOST = getenv("RABBITMQ_HOST")
 RABBITMQ_QUEUE = getenv("RABBITMQ_QUEUE")
+ENV = getenv("ENV")
 
 
 def publicar_pedido_criado(pedido_id: str):
+
+    if ENV == "test":
+        return  # 🔥 não faz nada nos testes
+
     try:
         connection = pika.BlockingConnection(
             pika.ConnectionParameters(host=RABBITMQ_HOST)

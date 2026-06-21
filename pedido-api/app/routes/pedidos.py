@@ -10,7 +10,7 @@ from app.kafka_producer import publicar_evento_pedido_criado
 router = APIRouter(tags=["Pedidos"])
 
 
-@router.post("/pedidos", status_code=status.HTTP_201_CREATED)
+@router.post("/pedidos", status_code=status.HTTP_200_OK)
 def criar_pedido(dados: PedidoCreate):
 
     pedido = Pedido.criar(
@@ -19,14 +19,18 @@ def criar_pedido(dados: PedidoCreate):
         quantidade=dados.quantidade
     )
 
-    pedidos_collection.insert_one(pedido)
+    result = pedidos_collection.insert_one(pedido)
 
-    publicar_pedido_criado(pedido["id"])
+    pedido_id = str(result.inserted_id)
+
+    publicar_pedido_criado(pedido_id)
 
     publicar_evento_pedido_criado(
-        pedido["id"],
+        pedido_id,
         pedido["cliente"]
     )
+
+    pedido["_id"] = pedido_id
 
     return pedido
 
@@ -36,7 +40,8 @@ def listar_pedidos():
 
     pedidos = []
 
-    for pedido in pedidos_collection.find({}, {"_id": 0}):
+    for pedido in pedidos_collection.find():
+        pedido["_id"] = str(pedido["_id"])
         pedidos.append(pedido)
 
     return pedidos
