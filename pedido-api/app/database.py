@@ -1,13 +1,12 @@
+import os
 from pymongo import MongoClient
-from os import getenv
 from dotenv import load_dotenv
 
 load_dotenv()
 
-MONGO_URI = getenv("MONGO_URI")
+MONGO_URL = os.getenv("MONGO_URL", "mongodb://localhost:27017")
 
-client = MongoClient(MONGO_URI)
+client = MongoClient(MONGO_URL)
 
-database = client["pedidos_db"]
-
-pedidos_collection = database["pedidos"]
+db = client["pedidos_db"]
+pedidos_collection = db["pedidos"]
